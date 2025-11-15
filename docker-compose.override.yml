@@ -1,0 +1,11 @@
+services:
+  flightwatch-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - Serilog__MinimumLevel__Default=Debug
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src/FlightWatch.Api/Logs:/app/Logs
+

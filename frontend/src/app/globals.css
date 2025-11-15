@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+:root {
+  --aviation-blue-dark: #003d82;
+  --aviation-blue: #0066cc;
+  --aviation-sky: #87ceeb;
+  --aviation-cloud: #e8f4f8;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.plane-icon {
+  backface-visibility: hidden;
+}
+
+.leaflet-marker-icon {
+  transition: none !important;
+}
+
+.marker-cluster {
+  background-color: rgba(0, 102, 204, 0.6);
+  border-radius: 50%;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+}
+
+.marker-cluster div {
+  background-color: rgba(0, 102, 204, 0.8);
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,139 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: flightwatch-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-flightwatch}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-flightwatch123}
+      - MONGO_INITDB_DATABASE=flightwatch
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - flightwatch-network
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: flightwatch-mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USERNAME:-flightwatch}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD:-flightwatch123}
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME:-admin}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD:-admin}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - flightwatch-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: flightwatch-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=flightwatch
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-flightwatch123}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - flightwatch-network
+
+  flightwatch-api:
+    image: flightwatch-api:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: flightwatch-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - OpenSky__BaseUrl=https://opensky-network.org/api
+      - OpenSky__AuthUrl=https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token
+      - OpenSky__ClientId=${OPENSKY_CLIENT_ID:-}
+      - OpenSky__ClientSecret=${OPENSKY_CLIENT_SECRET:-}
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY}
+      - JwtSettings__Issuer=FlightWatch.Api
+      - JwtSettings__Audience=FlightWatch.Client
+      - JwtSettings__AccessTokenExpirationMinutes=15
+      - JwtSettings__RefreshTokenExpirationDays=7
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=flightwatch
+      - RabbitMQ__Password=${RABBITMQ_PASSWORD:-flightwatch123}
+      - MongoDB__ConnectionString=mongodb://${MONGO_USERNAME:-flightwatch}:${MONGO_PASSWORD:-flightwatch123}@mongodb:27017/?authSource=admin
+      - MongoDB__DatabaseName=flightwatch
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - flightwatch-network
+
+  flightwatch-frontend:
+    image: flightwatch-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
+        - NEXT_PUBLIC_HUB_URL=${NEXT_PUBLIC_HUB_URL:-http://localhost:8080/hubs/flights}
+    container_name: flightwatch-frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
+      - NEXT_PUBLIC_HUB_URL=${NEXT_PUBLIC_HUB_URL:-http://localhost:8080/hubs/flights}
+    depends_on:
+      flightwatch-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - flightwatch-network
+
+volumes:
+  mongodb-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+
+networks:
+  flightwatch-network:
+    driver: bridge
+
