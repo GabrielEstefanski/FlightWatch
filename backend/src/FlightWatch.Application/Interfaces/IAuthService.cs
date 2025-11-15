@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 using FlightWatch.Application.Common;
 using FlightWatch.Application.DTOs.Auth;
 
@@ -13,19 +12,3 @@ public interface IAuthService
     Task<Result<UserDto>> GetUserByIdAsync(Guid userId);
 }
 
-=======
-using FlightWatch.Application.Common;
-using FlightWatch.Application.DTOs.Auth;
-
-namespace FlightWatch.Application.Interfaces;
-
-public interface IAuthService
-{
-    Task<Result<AuthResponse>> RegisterAsync(RegisterRequest request, string ipAddress);
-    Task<Result<AuthResponse>> LoginAsync(LoginRequest request, string ipAddress);
-    Task<Result<AuthResponse>> RefreshTokenAsync(string refreshToken, string ipAddress);
-    Task<Result> RevokeTokenAsync(string refreshToken, string ipAddress);
-    Task<Result<UserDto>> GetUserByIdAsync(Guid userId);
-}
-
->>>>>>> 46c33f55e4420f09ba269fe78a84593a0d6687a2

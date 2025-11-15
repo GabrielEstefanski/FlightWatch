@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 using System.Diagnostics;
 
 namespace FlightWatch.Infrastructure.Extensions;
@@ -23,29 +22,3 @@ public static class ActivityExtensions
     }
 }
 
-=======
-using System.Diagnostics;
-
-namespace FlightWatch.Infrastructure.Extensions;
-
-public static class ActivityExtensions
-{
-    public static Activity? RecordException(this Activity? activity, Exception exception)
-    {
-        if (activity == null)
-            return null;
-
-        var tags = new ActivityTagsCollection
-        {
-            ["exception.type"] = exception.GetType().FullName,
-            ["exception.message"] = exception.Message,
-            ["exception.stacktrace"] = exception.StackTrace
-        };
-
-        activity.AddEvent(new ActivityEvent("exception", default, tags));
-
-        return activity;
-    }
-}
-
->>>>>>> 46c33f55e4420f09ba269fe78a84593a0d6687a2
