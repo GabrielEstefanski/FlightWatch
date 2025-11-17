@@ -2,36 +2,25 @@
 
 import dynamic from 'next/dynamic';
 import { useFlightTracking } from '@/hooks/useFlightTracking';
-import { Plane, Wifi, WifiOff, Clock, Info, MapPin, ZoomIn, MousePointer, RefreshCw, Layers } from 'lucide-react';
+import { Plane, Wifi, WifiOff, Clock, MapPin, ZoomIn, MousePointer, RefreshCw, Layers } from 'lucide-react';
 import { DebugPanel } from '@/components/debug/DebugPanel';
-import { FlightDetailsPanel } from '@/components/flight/FlightDetailsPanel';
-import { useCallback, useMemo, useState } from 'react';
-import { FlightDto } from '@/types/flight';
+import { useCallback, useMemo } from 'react';
 
 const FlightMap = dynamic(
   () => import('@/components/map/FlightMap').then((mod) => ({ default: mod.FlightMap })),
-  { ssr: false, loading: () => <div className="w-full h-full bg-aviation-cloud flex items-center justify-center"><div className="text-aviation-blue-dark text-xl">Carregando mapa...</div></div> }
+  { ssr: false, loading: () => <div className="w-full h-full bg-aviation-cloud flex items-center justify-center"><div className="text-aviation-blue-dark text-xl">Loading map...</div></div> }
 );
 
 export default function Home() {
   const { flights, isConnected, flightCount, lastUpdate, subscribeToArea, currentSubscriptionId } = useFlightTracking();
-  const [selectedFlight, setSelectedFlight] = useState<FlightDto | null>(null);
 
   const handleBoundsChange = useCallback((bounds: { minLat: number; maxLat: number; minLon: number; maxLon: number }) => {
     subscribeToArea(bounds);
   }, [subscribeToArea]);
 
-  const handleFlightClick = useCallback((flight: FlightDto) => {
-    setSelectedFlight(flight);
-  }, []);
-
-  const handleClosePanel = useCallback(() => {
-    setSelectedFlight(null);
-  }, []);
-
   const formattedTime = useMemo(() => {
     if (!lastUpdate) return '--:--:--';
-    return lastUpdate.toLocaleTimeString('pt-BR');
+    return lastUpdate.toLocaleTimeString('en-US');
   }, [lastUpdate]);
 
   return (
@@ -47,7 +36,7 @@ export default function Home() {
                 <h1 className="text-2xl font-black bg-linear-to-r from-blue-600 via-blue-500 to-sky-500 bg-clip-text text-transparent drop-shadow-[0_0_17px_rgba(37,99,235,0.65)]">
                   FlightWatch
                 </h1>
-                <p className="text-sm font-semibold text-sky-500 drop-shadow-[0_2px_5px_rgba(0,0,0,0.45)]">Rastreamento em Tempo Real</p>
+                <p className="text-sm font-semibold text-sky-500 drop-shadow-[0_2px_5px_rgba(0,0,0,0.45)]">Real-Time Tracking</p>
               </div>
             </div>
 
@@ -56,12 +45,12 @@ export default function Home() {
                 {isConnected ? (
                   <>
                     <Wifi className="w-5 h-5 text-green-400" />
-                    <span className="text-sm text-black font-medium">Conectado</span>
+                    <span className="text-sm text-black font-medium">Connected</span>
                   </>
                 ) : (
                   <>
                     <WifiOff className="w-5 h-5 text-red-400" />
-                    <span className="text-sm text-black font-medium">Desconectado</span>
+                    <span className="text-sm text-black font-medium">Disconnected</span>
                   </>
                 )}
               </div>
@@ -69,7 +58,7 @@ export default function Home() {
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <Plane className="w-5 h-5 text-black" />
                 <span className="text-sm font-bold text-black">{flightCount}</span>
-                <span className="text-sm text-black font-medium">voos</span>
+                <span className="text-sm text-black font-medium">flights</span>
               </div>
 
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
@@ -84,30 +73,30 @@ export default function Home() {
       <div className="absolute bottom-6 left-6 z-10 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 p-6 max-w-sm">
         <div className="mb-4 pb-3 border-b border-gray-200/70">
           <h3 className="text-lg font-bold text-aviation-blue-dark">
-            Como usar
+            How to use
           </h3>
         </div>
         
         <ul className="space-y-3">
           <li className="flex items-start gap-3 text-sm text-gray-700">
             <MapPin className="w-4 h-4 text-aviation-blue mt-0.5 shrink-0" />
-            <span>Arraste o mapa para navegar</span>
+            <span>Drag the map to navigate</span>
           </li>
           <li className="flex items-start gap-3 text-sm text-gray-700">
             <ZoomIn className="w-4 h-4 text-aviation-blue mt-0.5 shrink-0" />
-            <span>Dê zoom para ver mais detalhes</span>
+            <span>Zoom in to see more details</span>
           </li>
           <li className="flex items-start gap-3 text-sm text-gray-700">
             <MousePointer className="w-4 h-4 text-aviation-blue mt-0.5 shrink-0" />
-            <span>Clique nos aviões para ver informações</span>
+            <span>Click an aircraft to view information</span>
           </li>
           <li className="flex items-start gap-3 text-sm text-gray-700">
             <RefreshCw className="w-4 h-4 text-aviation-blue mt-0.5 shrink-0" />
-            <span>Dados atualizam a cada 60 segundos</span>
+            <span>Data updates every 60 seconds</span>
           </li>
           <li className="flex items-start gap-3 text-sm text-gray-700">
             <Layers className="w-4 h-4 text-aviation-blue mt-0.5 shrink-0" />
-            <span>Clusters agrupam aviões próximos</span>
+            <span>Clusters group nearby aircraft</span>
           </li>
         </ul>
       </div>
@@ -116,7 +105,6 @@ export default function Home() {
         <FlightMap 
           flights={flights} 
           onBoundsChange={handleBoundsChange}
-          onFlightClick={handleFlightClick}
           center={[-15.7801, -47.9292]}
           zoom={5}
         />

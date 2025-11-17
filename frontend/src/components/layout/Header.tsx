@@ -19,14 +19,14 @@ export function Header() {
               className="flex items-center gap-2 hover:text-aviation-sky transition"
             >
               <Map className="w-5 h-5" />
-              <span>Mapa</span>
+              <span>Map</span>
             </Link>
             <Link 
               href="/flights" 
               className="flex items-center gap-2 hover:text-aviation-sky transition"
             >
               <Plane className="w-5 h-5" />
-              <span>Voos</span>
+              <span>Flights</span>
             </Link>
           </nav>
 
@@ -44,4 +44,3 @@ export function Header() {
     </header>
   );
 }
-

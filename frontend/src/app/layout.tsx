@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FlightWatch - Rastreamento de Voos em Tempo Real",
-  description: "Sistema profissional de rastreamento de voos em tempo real com WebSocket e mapa interativo",
+  title: "FlightWatch - Real-Time Flight Tracking",
+  description: "Professional real-time flight tracking system with WebSocket and interactive map",
 };
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         {children}
       </body>

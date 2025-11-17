@@ -1,16 +1,16 @@
 export const translateFlightStatus = (status: string | null): string => {
-  if (!status) return 'Desconhecido';
+  if (!status) return 'Unknown';
   
   const statusMap: Record<string, string> = {
-    'in_flight': 'Em Voo',
-    'on_ground': 'No Solo',
-    'airborne': 'No Ar',
-    'scheduled': 'Programado',
-    'active': 'Ativo',
-    'landed': 'Aterrissado',
-    'cancelled': 'Cancelado',
-    'incident': 'Incidente',
-    'diverted': 'Desviado',
+    'in_flight': 'In Flight',
+    'on_ground': 'On Ground',
+    'airborne': 'Airborne',
+    'scheduled': 'Scheduled',
+    'active': 'Active',
+    'landed': 'Landed',
+    'cancelled': 'Cancelled',
+    'incident': 'Incident',
+    'diverted': 'Diverted',
   };
 
   const normalizedStatus = status.toLowerCase().replace(/[-\s]/g, '_');
@@ -19,8 +19,7 @@ export const translateFlightStatus = (status: string | null): string => {
 };
 
 export const getCardinalDirection = (degrees: number): string => {
-  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
   const index = Math.round(degrees / 45) % 8;
   return directions[index];
 };
-
