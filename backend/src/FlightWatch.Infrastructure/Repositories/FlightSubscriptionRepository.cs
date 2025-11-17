@@ -1,8 +1,8 @@
 using FlightWatch.Application.Interfaces;
 using FlightWatch.Domain.Entities;
 using FlightWatch.Infrastructure.Data;
-using FlightWatch.Infrastructure.Repositories;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace FlightWatch.Infrastructure.Repositories;
 

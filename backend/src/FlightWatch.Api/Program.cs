@@ -10,9 +10,6 @@ using FlightWatch.Application.Interfaces;
 using FlightWatch.Infrastructure.BackgroundServices;
 using FlightWatch.Infrastructure.Configuration;
 using FlightWatch.Infrastructure.Extensions;
-using FlightWatch.Infrastructure.Data;
-using FlightWatch.Infrastructure.EventStore;
-using FlightWatch.Infrastructure.Repositories;
 using FlightWatch.Infrastructure.Security;
 using FlightWatch.Infrastructure.Services;
 using MongoDB.Driver;
@@ -96,26 +93,10 @@ try
 
     builder.Services.AddAuthorization();
 
+    builder.Services.AddMongoDb(builder.Configuration);
+
     var mongoDbSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDbSettings>();
-    if (mongoDbSettings == null || string.IsNullOrEmpty(mongoDbSettings.ConnectionString))
-    {
-        throw new InvalidOperationException("MongoDB configuration is required. Please set MongoDB__ConnectionString and MongoDB__DatabaseName in configuration.");
-    }
-
-    var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
-    builder.Services.AddSingleton<IMongoClient>(mongoClient);
-    builder.Services.AddScoped<MongoDbContext>(sp =>
-    {
-        var client = sp.GetRequiredService<IMongoClient>();
-        return new MongoDbContext(client, mongoDbSettings.DatabaseName);
-    });
-
-    builder.Services.AddScoped<IUserRepository, UserRepository>();
-    builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-    builder.Services.AddScoped<IFlightSubscriptionRepository, FlightSubscriptionRepository>();
-    builder.Services.AddScoped<IEventStore, EventStore>();
-
-    Log.Information("MongoDB configured with database: {DatabaseName}", mongoDbSettings.DatabaseName);
+    Log.Information("MongoDB configured with database: {DatabaseName}", mongoDbSettings?.DatabaseName ?? "Unknown");
     
     builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
     builder.Services.AddScoped<ITokenService, TokenService>();
@@ -223,7 +204,8 @@ try
     {
         setup.SetEvaluationTimeInSeconds(30);
         setup.MaximumHistoryEntriesPerEndpoint(50);
-        setup.AddHealthCheckEndpoint("FlightWatch API", "/health");
+
+        setup.AddHealthCheckEndpoint("FlightWatch API", "http://127.0.0.1:8080/health");
     })
     .AddInMemoryStorage();
 
@@ -316,3 +298,5 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+public partial class Program { }

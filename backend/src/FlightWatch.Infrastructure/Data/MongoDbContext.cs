@@ -46,7 +46,7 @@ public class MongoDbContext
         public Guid EventId { get; init; }
         public string EventType { get; init; } = string.Empty;
         public DateTime OccurredOn { get; init; }
-        public object EventData { get; init; } = null!;
+        public MongoDB.Bson.BsonDocument EventData { get; init; } = null!;
     }
 }
 

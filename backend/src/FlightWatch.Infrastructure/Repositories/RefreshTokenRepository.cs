@@ -1,16 +1,12 @@
 using FlightWatch.Application.Interfaces;
 using FlightWatch.Domain.Entities;
 using FlightWatch.Infrastructure.Data;
-using FlightWatch.Infrastructure.Repositories;
+using MongoDB.Driver;
 
 namespace FlightWatch.Infrastructure.Repositories;
 
-public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshTokenRepository
+public class RefreshTokenRepository(MongoDbContext context) : RepositoryBase<RefreshToken>(context, "refreshTokens"), IRefreshTokenRepository
 {
-    public RefreshTokenRepository(MongoDbContext context) : base(context, "refreshTokens")
-    {
-    }
-
     public async Task<RefreshToken?> GetByTokenAsync(string token)
     {
         return await Collection.Find(Filter.Eq(t => t.Token, token)).FirstOrDefaultAsync();

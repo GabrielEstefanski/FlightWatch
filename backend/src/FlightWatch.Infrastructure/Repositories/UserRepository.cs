@@ -1,16 +1,12 @@
 using FlightWatch.Application.Interfaces;
 using FlightWatch.Domain.Entities;
 using FlightWatch.Infrastructure.Data;
-using FlightWatch.Infrastructure.Repositories;
+using MongoDB.Driver;
 
 namespace FlightWatch.Infrastructure.Repositories;
 
-public class UserRepository : RepositoryBase<User>, IUserRepository
+public class UserRepository(MongoDbContext context) : RepositoryBase<User>(context, "users"), IUserRepository
 {
-    public UserRepository(MongoDbContext context) : base(context, "users")
-    {
-    }
-
     public async Task<User?> GetByIdAsync(Guid id)
     {
         return await Collection.Find(Filter.Eq(u => u.Id, id)).FirstOrDefaultAsync();

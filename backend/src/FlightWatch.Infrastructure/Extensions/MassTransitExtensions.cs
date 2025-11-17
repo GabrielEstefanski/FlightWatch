@@ -1,7 +1,7 @@
 using FlightWatch.Application.Configuration;
+using FlightWatch.Application.Events;
 using FlightWatch.Application.Interfaces;
 using FlightWatch.Infrastructure.EventHandlers;
-using FlightWatch.Infrastructure.EventStore;
 using FlightWatch.Infrastructure.Messaging;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +14,6 @@ public static class MassTransitExtensions
     public static IServiceCollection AddEventSourcing(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<RabbitMqSettings>(configuration.GetSection("RabbitMQ"));
-
-        services.AddSingleton<IEventStore, InMemoryEventStore>();
         services.AddScoped<IEventBus, RabbitMqEventBus>();
 
         var rabbitMqSettings = configuration.GetSection("RabbitMQ").Get<RabbitMqSettings>() ?? new RabbitMqSettings();
@@ -50,10 +48,10 @@ public static class MassTransitExtensions
 
                 cfg.ConfigureEndpoints(context);
 
-                cfg.Message<Application.Events.FlightSubscriptionCreatedIntegrationEvent>(e => 
+                cfg.Message<FlightSubscriptionCreatedIntegrationEvent>(e => 
                     e.SetEntityName("flight-subscription-created"));
                 
-                cfg.Message<Application.Events.FlightDataUpdatedIntegrationEvent>(e => 
+                cfg.Message<FlightDataUpdatedIntegrationEvent>(e => 
                     e.SetEntityName("flight-data-updated"));
             });
         });
