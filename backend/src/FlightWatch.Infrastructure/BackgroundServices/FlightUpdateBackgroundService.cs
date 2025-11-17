@@ -143,9 +143,12 @@ public class FlightUpdateBackgroundService(
         await Task.WhenAll(tasks);
     }
 
-    public override void Dispose()
+   public override void Dispose()
     {
         _semaphore?.Dispose();
+
+        GC.SuppressFinalize(this);
+
         base.Dispose();
     }
 }

@@ -1,5 +1,4 @@
 using FlightWatch.Domain.Entities;
-using FlightWatch.Domain.Events;
 using MongoDB.Driver;
 
 namespace FlightWatch.Infrastructure.Data;

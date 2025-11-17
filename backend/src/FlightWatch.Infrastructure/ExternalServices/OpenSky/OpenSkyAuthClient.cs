@@ -1,6 +1,4 @@
-using System.Text;
 using System.Text.Json;
-using FlightWatch.Application.Configuration;
 using FlightWatch.Infrastructure.Configuration;
 using FlightWatch.Infrastructure.ExternalServices.OpenSky.Models;
 using Microsoft.Extensions.Logging;

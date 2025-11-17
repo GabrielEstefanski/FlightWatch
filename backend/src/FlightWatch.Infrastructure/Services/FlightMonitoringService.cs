@@ -1,10 +1,7 @@
 using AutoMapper;
 using FlightWatch.Application.Common;
-using FlightWatch.Application.DTOs;
-using FlightWatch.Application.DTOs.FlightMonitoring;
 using FlightWatch.Application.Events;
 using FlightWatch.Application.Interfaces;
-using FlightWatch.Domain.Entities;
 using FlightWatch.Domain.Events;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +13,6 @@ public class FlightMonitoringService(
     IFlightNotificationService notificationService,
     IEventBus eventBus,
     IEventStore eventStore,
-    IMapper mapper,
     ILogger<FlightMonitoringService> logger) : IFlightMonitoringService
 {
     private readonly IFlightSubscriptionRepository _subscriptionRepository = subscriptionRepository;
@@ -24,7 +20,6 @@ public class FlightMonitoringService(
     private readonly IFlightNotificationService _notificationService = notificationService;
     private readonly IEventBus _eventBus = eventBus;
     private readonly IEventStore _eventStore = eventStore;
-    private readonly IMapper _mapper = mapper;
     private readonly ILogger<FlightMonitoringService> _logger = logger;
 
     public async Task<Result> UnsubscribeAsync(string connectionId)

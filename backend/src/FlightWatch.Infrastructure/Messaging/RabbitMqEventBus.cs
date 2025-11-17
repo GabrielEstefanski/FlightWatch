@@ -5,16 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace FlightWatch.Infrastructure.Messaging;
 
-public class RabbitMqEventBus : IEventBus
+public class RabbitMqEventBus(IPublishEndpoint publishEndpoint, ILogger<RabbitMqEventBus> logger) : IEventBus
 {
-    private readonly IPublishEndpoint _publishEndpoint;
-    private readonly ILogger<RabbitMqEventBus> _logger;
-
-    public RabbitMqEventBus(IPublishEndpoint publishEndpoint, ILogger<RabbitMqEventBus> logger)
-    {
-        _publishEndpoint = publishEndpoint;
-        _logger = logger;
-    }
+    private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
+    private readonly ILogger<RabbitMqEventBus> _logger = logger;
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) 
         where TEvent : IIntegrationEvent

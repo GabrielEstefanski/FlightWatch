@@ -49,15 +49,11 @@ public class EventStore(MongoDbContext context) : IEventStore
 
     private IDomainEvent DeserializeEvent(MongoDbContext.StoredEvent storedEvent)
     {
-        var eventType = Type.GetType(storedEvent.EventType) 
+        var eventType = (Type.GetType(storedEvent.EventType) 
             ?? AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
-                .FirstOrDefault(t => t.Name == storedEvent.EventType && typeof(IDomainEvent).IsAssignableFrom(t));
-
-        if (eventType == null)
-        {
-            throw new InvalidOperationException($"Event type '{storedEvent.EventType}' not found.");
-        }
+                .FirstOrDefault(t => t.Name == storedEvent.EventType && typeof(IDomainEvent).IsAssignableFrom(t)))
+                    ?? throw new InvalidOperationException($"Event type '{storedEvent.EventType}' not found.");
 
         return (IDomainEvent)BsonSerializer.Deserialize(storedEvent.EventData, eventType);
     }

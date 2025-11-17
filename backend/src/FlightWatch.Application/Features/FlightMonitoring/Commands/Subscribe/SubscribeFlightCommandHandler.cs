@@ -92,13 +92,10 @@ public class SubscribeFlightCommandHandler(
             "Fetching initial flight data for subscription {SubscriptionId}",
             subscription.Id);
 
-        // Buscar voos imediatamente em background (sem delay)
-        // Fire-and-forget para não bloquear a resposta ao cliente
         _ = Task.Run(async () =>
         {
             try
             {
-                // Sem delay - busca imediata!
                 var updateResult = await _monitoringService.UpdateFlightsForSubscriptionAsync(subscription.Id);
                 
                 if (updateResult.IsFailure)

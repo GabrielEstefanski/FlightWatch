@@ -14,7 +14,7 @@ public class OpenSkyResponse
     public List<OpenSkyStateVector> GetStateVectors()
     {
         if (States == null || States.Value.ValueKind != JsonValueKind.Array)
-            return new List<OpenSkyStateVector>();
+            return [];
 
         var stateVectors = new List<OpenSkyStateVector>();
 

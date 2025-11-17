@@ -1,7 +1,4 @@
-using FlightWatch.Application.Common;
-using FlightWatch.Application.DTOs.FlightMonitoring;
 using FlightWatch.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightWatch.Api.Controllers;

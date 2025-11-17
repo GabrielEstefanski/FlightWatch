@@ -1,7 +1,6 @@
 using FlightWatch.Application.Interfaces;
 using FlightWatch.Infrastructure.Configuration;
 using FlightWatch.Infrastructure.Data;
-using FlightWatch.Infrastructure.EventStore;
 using FlightWatch.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,8 +31,8 @@ public static class MongoDbExtensions
 
         var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
         services.AddSingleton<IMongoClient>(mongoClient);
-        
-        services.AddScoped<MongoDbContext>(sp =>
+
+        _ = services.AddScoped<MongoDbContext>(sp =>
         {
             var client = sp.GetRequiredService<IMongoClient>();
             return new MongoDbContext(client, mongoDbSettings.DatabaseName);

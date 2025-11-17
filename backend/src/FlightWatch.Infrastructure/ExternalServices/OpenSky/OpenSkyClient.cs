@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using FlightWatch.Application.Common;
-using FlightWatch.Application.Configuration;
 using FlightWatch.Application.DTOs;
 using FlightWatch.Application.Interfaces;
 using FlightWatch.Infrastructure.ExternalServices.OpenSky.Models;
@@ -10,6 +9,9 @@ using FlightWatch.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using FlightWatch.Infrastructure.Configuration;
+using System.Net.Http.Headers;
+using System.Net;
+using FlightWatch.Application.Helpers;
 
 namespace FlightWatch.Infrastructure.ExternalServices.OpenSky;
 
@@ -37,19 +39,19 @@ public class OpenSkyClient(
             var requestUri = $"{_settings.BaseUrl}/states/all";
             
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             _logger.LogInformation("Fetching all flights from OpenSky Network");
 
             var response = await _httpClient.SendAsync(request);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 _logger.LogWarning("OpenSky token expired, refreshing...");
                 _authClient.ClearToken();
                 
                 accessToken = await _authClient.GetAccessTokenAsync();
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 response = await _httpClient.SendAsync(request);
             }
 
@@ -68,7 +70,7 @@ public class OpenSkyClient(
             var openSkyResponse = JsonSerializer.Deserialize<OpenSkyResponse>(content);
 
             if (openSkyResponse?.States == null || 
-                openSkyResponse.States.Value.ValueKind != System.Text.Json.JsonValueKind.Array ||
+                openSkyResponse.States.Value.ValueKind != JsonValueKind.Array ||
                 openSkyResponse.States.Value.GetArrayLength() == 0)
             {
                 _logger.LogInformation("No flights returned from OpenSky");
@@ -124,7 +126,7 @@ public class OpenSkyClient(
                            $"&lomin={minLongitude.ToString(CultureInfo.InvariantCulture)}&lomax={maxLongitude.ToString(CultureInfo.InvariantCulture)}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             _logger.LogInformation(
                 "Fetching flights from OpenSky in bounding box: ({MinLat},{MinLon}) to ({MaxLat},{MaxLon})",
@@ -132,11 +134,11 @@ public class OpenSkyClient(
 
             var response = await _httpClient.SendAsync(request);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 _authClient.ClearToken();
                 accessToken = await _authClient.GetAccessTokenAsync();
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 response = await _httpClient.SendAsync(request);
             }
 
@@ -151,7 +153,7 @@ public class OpenSkyClient(
             var openSkyResponse = JsonSerializer.Deserialize<OpenSkyResponse>(content);
 
             if (openSkyResponse?.States == null || 
-                openSkyResponse.States.Value.ValueKind != System.Text.Json.JsonValueKind.Array ||
+                openSkyResponse.States.Value.ValueKind != JsonValueKind.Array ||
                 openSkyResponse.States.Value.GetArrayLength() == 0)
             {
                 activity?.SetStatus(ActivityStatusCode.Ok);
@@ -196,7 +198,7 @@ public class OpenSkyClient(
             Velocity = state.Velocity,
             IsLive = true,
             Category = state.Category,
-            CategoryDescription = Application.Helpers.AircraftCategoryHelper.GetCategoryShort(state.Category)
+            CategoryDescription = AircraftCategoryHelper.GetCategoryShort(state.Category)
         };
     }
 }

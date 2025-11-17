@@ -4,7 +4,6 @@ using FlightWatch.Application.Configuration;
 using FlightWatch.Application.DTOs.Auth;
 using FlightWatch.Application.Interfaces;
 using FlightWatch.Domain.Entities;
-using FlightWatch.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

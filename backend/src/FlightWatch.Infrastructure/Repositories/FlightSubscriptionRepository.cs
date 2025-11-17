@@ -6,11 +6,8 @@ using MongoDB.Driver;
 
 namespace FlightWatch.Infrastructure.Repositories;
 
-public class FlightSubscriptionRepository : RepositoryBase<FlightSubscription>, IFlightSubscriptionRepository
+public class FlightSubscriptionRepository(MongoDbContext context) : RepositoryBase<FlightSubscription>(context, "flightSubscriptions"), IFlightSubscriptionRepository
 {
-    public FlightSubscriptionRepository(MongoDbContext context) : base(context, "flightSubscriptions")
-    {
-    }
 
     public async Task<FlightSubscription?> GetByIdAsync(Guid id)
     {

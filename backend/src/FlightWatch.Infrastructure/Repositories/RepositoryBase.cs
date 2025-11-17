@@ -3,16 +3,10 @@ using MongoDB.Driver;
 
 namespace FlightWatch.Infrastructure.Repositories;
 
-public abstract class RepositoryBase<T> where T : class
+public abstract class RepositoryBase<T>(MongoDbContext context, string collectionName) where T : class
 {
-    protected readonly MongoDbContext Context;
-    protected readonly IMongoCollection<T> Collection;
-
-    protected RepositoryBase(MongoDbContext context, string collectionName)
-    {
-        Context = context;
-        Collection = context.GetCollection<T>(collectionName);
-    }
+    protected readonly MongoDbContext Context = context;
+    protected readonly IMongoCollection<T> Collection = context.GetCollection<T>(collectionName);
 
     protected IMongoCollection<T> GetCollection() => Collection;
 

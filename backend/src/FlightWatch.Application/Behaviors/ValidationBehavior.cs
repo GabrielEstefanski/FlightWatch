@@ -49,7 +49,7 @@ public class ValidationBehavior<TRequest, TResponse>(ILogger<ValidationBehavior<
             }
         }
 
-        return await next();
+        return await next(cancellationToken);
     }
 }
 
