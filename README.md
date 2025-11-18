@@ -401,6 +401,17 @@ docker-compose down
 7. **Observer Pattern** - Event-driven communication
 8. **Strategy Pattern** - Configurable resilience policies
 
+## ⚠️ Disclaimer – Flight Tracking Limitations
+
+FlightWatch retrieves all aircraft data from the **OpenSky Network API**, which relies primarily on **ADS-B receivers** and, in some regions, **MLAT (Multilateration)**. Because of this, the data shown in the system is subject to the following limitations:
+
+- **Coverage is not globally uniform** — remote areas, regions with few receivers, and certain countries may have partial or no visibility.
+- **Data accuracy and update frequency vary** depending on receiver availability and signal quality.
+- **Not all aircraft are trackable** — some disable their transponder, operate in restricted modes, or are not ADS-B equipped.
+- **Delays, gaps, or missing data** may occur due to network limitations, atmospheric conditions, or operator privacy constraints.
+
+FlightWatch displays flight information **exactly as provided by the OpenSky Network**, without guarantees of completeness, accuracy, or real-time precision.
+
 ## 📈 Scalability Considerations
 
 - **Horizontal Scaling**: Stateless API allows multiple instances

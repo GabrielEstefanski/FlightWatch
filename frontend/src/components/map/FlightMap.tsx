@@ -125,20 +125,20 @@ const FlightMarker = memo(({ flight, onClick }: { flight: FlightDto; onClick?: (
             ✈️ {flight.flightNumber}
           </div>
           <div className="space-y-1 text-sm">
-            <div><strong>País Origem:</strong> {flight.airline}</div>
+            <div><strong>Country of Origin:</strong> {flight.airline}</div>
             <div><strong>Status:</strong> {translateFlightStatus(flight.flightStatus)}</div>
             {flight.categoryDescription && (
-              <div><strong>Tipo:</strong> {flight.categoryDescription}</div>
+              <div><strong>Type:</strong> {flight.categoryDescription}</div>
             )}
             {flight.altitude && (
               <div><strong>Altitude:</strong> {Math.round(flight.altitude)}m</div>
             )}
             {flight.velocity && (
-              <div><strong>Velocidade:</strong> {Math.round(flight.velocity * 3.6)} km/h</div>
+              <div><strong>Speed:</strong> {Math.round(flight.velocity * 3.6)} km/h</div>
             )}
             <div><strong>Lat/Lon:</strong> {flight.latitude.toFixed(4)}, {flight.longitude.toFixed(4)}</div>
             {flight.direction && (
-              <div><strong>Direção:</strong> {Math.round(flight.direction)}°</div>
+              <div><strong>Heading:</strong> {Math.round(flight.direction)}°</div>
             )}
           </div>
         </div>
@@ -179,7 +179,7 @@ export const FlightMap = memo(({ flights, onBoundsChange, onFlightClick, center 
   if (!isMounted) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-aviation-cloud">
-        <div className="text-aviation-blue-dark text-xl">Carregando mapa...</div>
+        <div className="text-aviation-blue-dark text-xl">Loading map...</div>
       </div>
     );
   }
