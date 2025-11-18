@@ -412,7 +412,7 @@ FlightWatch retrieves all aircraft data from the **OpenSky Network API**, which 
 
 FlightWatch displays flight information **exactly as provided by the OpenSky Network**, without guarantees of completeness, accuracy, or real-time precision.
 
-📈 Scalability Considerations
+## 📈 Scalability Considerations
 
 - **Horizontal Scaling**: The API and background services are stateless, allowing seamless horizontal scaling across multiple instances without coordination overhead.
 - **Message Queue Decoupling**: RabbitMQ isolates producers from consumers, enabling independent scaling of ingestion, processing, and broadcasting pipelines under heavy load.
