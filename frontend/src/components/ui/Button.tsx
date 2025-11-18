@@ -16,9 +16,9 @@ export function Button({
   const baseStyles = 'font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variants = {
-    primary: 'bg-aviation-blue hover:bg-aviation-blue-dark text-white',
+    primary: 'bg-aviation-blue hover:bg-aviation-blue-dark !text-white',
     secondary: 'bg-aviation-sky hover:bg-aviation-blue-light text-aviation-blue-dark',
-    danger: 'bg-red-500 hover:bg-red-600 text-white',
+    danger: 'bg-red-500 hover:bg-red-600 !text-white',
   };
   
   const sizes = {

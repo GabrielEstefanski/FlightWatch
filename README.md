@@ -412,14 +412,13 @@ FlightWatch retrieves all aircraft data from the **OpenSky Network API**, which 
 
 FlightWatch displays flight information **exactly as provided by the OpenSky Network**, without guarantees of completeness, accuracy, or real-time precision.
 
-## 📈 Scalability Considerations
+📈 Scalability Considerations
 
-- **Horizontal Scaling**: Stateless API allows multiple instances
-- **Message Queue**: RabbitMQ enables async processing
-- **Read/Write Separation**: CQRS allows independent scaling
-- **Event-Driven**: Loose coupling enables microservices migration
-- **Caching**: Ready for Redis integration
-- **Database**: Event Store can be migrated to distributed storage
+- **Horizontal Scaling**: The API and background services are stateless, allowing seamless horizontal scaling across multiple instances without coordination overhead.
+- **Message Queue Decoupling**: RabbitMQ isolates producers from consumers, enabling independent scaling of ingestion, processing, and broadcasting pipelines under heavy load.
+- **Distributed Caching Ready**: The system is designed for Redis integration to reduce repeated lookups, store transient flight snapshots, and support high-throughput read scenarios.
+- **Load Distribution**: WebSocket clients can be balanced across instances, with message fan-out handled independently by the event-driven layer.
+- **Backpressure Handling**: Queue depth and consumer throughput enable natural backpressure, preventing overload during traffic spikes like peak airspace activity.
 
 ## 🔒 Security
 

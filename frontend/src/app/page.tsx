@@ -2,9 +2,11 @@
 
 import dynamic from 'next/dynamic';
 import { useFlightTracking } from '@/hooks/useFlightTracking';
-import { Plane, Wifi, WifiOff, Clock, MapPin, ZoomIn, MousePointer, RefreshCw, Layers } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Plane, Wifi, WifiOff, Clock, MapPin, ZoomIn, MousePointer, RefreshCw, Layers, LogIn, LogOut, User } from 'lucide-react';
 import { DebugPanel } from '@/components/debug/DebugPanel';
-import { useCallback, useMemo } from 'react';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useCallback, useMemo, useState } from 'react';
 
 const FlightMap = dynamic(
   () => import('@/components/map/FlightMap').then((mod) => ({ default: mod.FlightMap })),
@@ -13,6 +15,8 @@ const FlightMap = dynamic(
 
 export default function Home() {
   const { flights, isConnected, flightCount, lastUpdate, subscribeToArea, currentSubscriptionId } = useFlightTracking();
+  const { user, isAuthenticated, login, logout } = useAuth();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleBoundsChange = useCallback((bounds: { minLat: number; maxLat: number; minLon: number; maxLon: number }) => {
     subscribeToArea(bounds);
@@ -22,6 +26,20 @@ export default function Home() {
     if (!lastUpdate) return '--:--:--';
     return lastUpdate.toLocaleTimeString('en-US');
   }, [lastUpdate]);
+
+  const handleLoginSuccess = useCallback((accessToken: string, refreshToken: string, userData: any) => {
+    login(accessToken, refreshToken, userData);
+    setIsLoginModalOpen(false);
+  }, [login]);
+
+  const handleLogout = useCallback(() => {
+    logout();
+  }, [logout]);
+
+  const userName = useMemo(() => {
+    if (!user) return null;
+    return `${user.firstName} ${user.lastName}`.trim() || user.email;
+  }, [user]);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
@@ -65,6 +83,28 @@ export default function Home() {
                 <Clock className="w-5 h-5 text-black" />
                 <span className="text-sm text-black font-medium">{formattedTime}</span>
               </div>
+
+              {isAuthenticated && user ? (
+                <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                  <User className="w-5 h-5 text-black" />
+                  <span className="text-sm text-black font-medium">{userName}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1 text-sm text-black hover:text-red-500 transition font-medium"
+                    title="Logout"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition"
+                >
+                  <LogIn className="w-5 h-5 text-black" />
+                  <span className="text-sm text-black font-medium">Login</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -116,6 +156,12 @@ export default function Home() {
         flightCount={flightCount}
         flights={flights}
         lastUpdate={lastUpdate}
+      />
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
       />
     </div>
   );
